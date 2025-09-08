@@ -1,17 +1,17 @@
 name: Test PowerShell Script
 
 on:
-   push:
-     branches: [ main ] 
+  push:
+    branches:
+      - main
 
 jobs:
   run-powershell:
     runs-on: windows-latest
-    steps:
-    - name: checkout code
-      uses: actions/checkout@v4
 
-    -name: Run Powershell script
-     run: | 
-        Write-Host "Running PowerShell script ..."
-         pwsh -File Scripts/Envbootstrap.ps1
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run PowerShell script
+        run: pwsh -File Scripts/EnvBootstrap.ps1
