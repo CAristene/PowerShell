@@ -1,25 +1,26 @@
-# This script automates local user creation and task assignment
-# Local environment Bootsrap Script
+# Local Environment Bootstrap Script
 # Create Users, Folders, and Scheduled Tasks
 
 # Define Users
-$users = @(                                                                                                                                                      
+$users = @(
     @{Username="Mwright"; FullName="Marcus Wright"; Role="User"},
     @{Username="Ljohnson"; FullName="Linda Johnson"; Role="User"},
-    @{Username="Dphillips"; FullName="Deandre Phillips"; Role="User"}
-    @{Username="Bstewart"; Fullname="Brenda Stewart"; Role="Admin"}
+    @{Username="Dphillips"; FullName="Deandre Phillips"; Role="User"},
+    @{Username="Bstewart"; FullName="Brenda Stewart"; Role="Admin"},
     @{Username="Tgreen"; FullName="Tobias Green"; Role="Admin"}
-    )
-    # Create Users
-    foreach ($user in $users) {
-        $securePass = ConvertTo-SecureString "P@ssword123" -AsPlainText -Force
-        New-LocalUser -Name $user.Username -Password $securepass -FullName $User.FullName -Description $user.role
-        Add-LocalGroupMember -Group "Users" -Member $user.Username
-        if ($user.role -eq "admin") {
+)
+
+# Create Users
+foreach ($user in $users) {
+    $securePass = ConvertTo-SecureString "P@ssword123" -AsPlainText -Force
+    New-LocalUser -Name $user.Username -Password $securePass -FullName $user.FullName -Description $user.Role
+    Add-LocalGroupMember -Group "Users" -Member $user.Username
+    if ($user.Role -eq "Admin") {
         Add-LocalGroupMember -Group "Administrators" -Member $user.Username
-        }
-  }
- # Create folders and assign permissions
+    }
+}
+
+# Create folders and assign permissions
 $basePath = "C:\CompanyData"
 New-Item -Path $basePath -ItemType Directory -Force
 
@@ -36,16 +37,19 @@ foreach ($folder in $folders) {
     }
 }
 
-  
-  # Create scheduled task for backup
-  $backupscript = "C:/Scripts/Backup.ps1"
-  New-Item -Path $backupscript -ItemType File -Force
-  Set-Content -Path $backupscript -Value '# Placeholder for backup logic'
-  $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File $backupscript"
-  $trigger = New-ScheduledTaskTrigger -Daily -At 3am
-  Register -ScheduledTask -Taskname "DailyBackup" -Action $action -Trigger $trigger -User "asmith" -Password "P@ssword123"
+# Create scheduled task for backup
+$backupScript = "C:\Scripts\Backup.ps1"
+New-Item -Path $backupScript -ItemType File -Force
+Set-Content -Path $backupScript -Value '# Placeholder for backup logic'
 
-  Write-Host "Environment setup complete."
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File `"$backupScript`""
+$trigger = New-ScheduledTaskTrigger -Daily -At 3am
+Register-ScheduledTask -TaskName "DailyBackup" -Action $action -Trigger $trigger -User "asmith" -Password "P@ssword123"
+
+Write-Host "Environment setup complete."
+Read-Host -Prompt "Press Enter to exit"
+
+
   
   
 
