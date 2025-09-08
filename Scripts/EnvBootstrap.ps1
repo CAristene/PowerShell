@@ -19,19 +19,24 @@ $users = @(
         Add-LocalGroupMember -Group "Administrators" -Member $user.Username
         }
   }
-  # Create folders and assign permissions
-  $basepath = "C:\CompanyData
-  New-Item -Path $basePath -ItemType Directory -Force
-  $folders = @("Reports", "Monitoring", "Backups")
-  foreach ($folder in $folders) {
-      $path = Join-Path $basePath $folder
-      New-Item -Path $path -ItemType Directory - Force
-      switch ($folder) {
-           "Reports"    { icacls $path /grant "Users:(R,W)" }
-           "Monitoring" { icacls $path /grant "Administrators: (F)" }
-           "Backups"    { icacls $path /grant "Administrators: (F)" }
-      }
-  }
+ # Create folders and assign permissions
+$basePath = "C:\CompanyData"
+New-Item -Path $basePath -ItemType Directory -Force
+
+$folders = @("Reports", "Monitoring", "Backups")
+
+foreach ($folder in $folders) {
+    $path = Join-Path $basePath $folder
+    New-Item -Path $path -ItemType Directory -Force
+
+    switch ($folder) {
+        "Reports"     { icacls $path /grant "Users:(R,W)" }
+        "Monitoring"  { icacls $path /grant "Administrators:(F)" }
+        "Backups"     { icacls $path /grant "Administrators:(F)" }
+    }
+}
+
+  
   # Create scheduled task for backup
   $backupscript = "C:/Scripts/Backup.ps1"
   New-Item -Path $backupscript -ItemType File -Force
