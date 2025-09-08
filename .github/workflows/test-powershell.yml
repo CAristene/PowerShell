@@ -12,7 +12,6 @@ jobs:
       uses: actions/checkout@v4
 
     -name: Run Powershell script
-     shell: pwsh
      run: | 
         Write-Host "Running PowerShell script ..."
-        .\Scripts\Envbootstrap.ps1
+         pwsh -File Scripts/Envbootstrap.ps1
