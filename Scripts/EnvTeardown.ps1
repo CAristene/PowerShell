@@ -44,4 +44,10 @@ foreach ($user in $users) {
         Write-Warning "User '$user' not found or could not be removed."
     }
 }
-
+# Remove base folder if empty
+if ((Get-ChildItem -Path $basePath -Recurse -Force -ErrorAction SilentlyContinue).Count -eq 0) {
+    Remove-Item -Path $basePath -Force
+    Write-Host "Base folder '$basePath' removed."
+} else {
+    Write-Warning "Base folder '$basePath' not empty. Manual check recommended."
+}
