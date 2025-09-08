@@ -1,5 +1,5 @@
 # Local Environment Bootstrap Script
-# Create Users, Folders, and Scheduled Tasks
+# Creates Users, Folders, and Scheduled Tasks
 
 # Define Users
 $users = @(
@@ -10,7 +10,7 @@ $users = @(
     @{Username="Tgreen"; FullName="Tobias Green"; Role="Admin"}
 )
 
-# Create Users
+# Create Users and Assign Groups
 foreach ($user in $users) {
     $securePass = ConvertTo-SecureString "P@ssword123" -AsPlainText -Force
     New-LocalUser -Name $user.Username -Password $securePass -FullName $user.FullName -Description $user.Role
@@ -20,7 +20,7 @@ foreach ($user in $users) {
     }
 }
 
-# Create folders and assign permissions
+# Create Base Folder and Subfolders
 $basePath = "C:\CompanyData"
 New-Item -Path $basePath -ItemType Directory -Force
 
@@ -37,18 +37,32 @@ foreach ($folder in $folders) {
     }
 }
 
-# Create scheduled task for backup
+# Create Backup Script
 $backupScript = "C:\Scripts\Backup.ps1"
 New-Item -Path $backupScript -ItemType File -Force
 Set-Content -Path $backupScript -Value '# Placeholder for backup logic'
 
-$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File `"$backupScript`""
-$trigger = New-ScheduledTaskTrigger -Daily -At 3am
-Register-ScheduledTask -TaskName "DailyBackup_Bstewart" -Action $action -Trigger $trigger -User "Bstewart" -Password "P@ssword123"
-Register-ScheduledTask -TaskName "DailyBackup_Tgreen" -Action $action -Trigger $trigger -User "Tgreen" -Password "P@ssword123"
+# Register Scheduled Tasks for Admin Users
+$adminUsers = @("Bstewart", "Tgreen")
 
-Write-Host "Environment setup complete."
+foreach ($admin in $adminUsers) {
+    $taskName = "DailyBackup_$admin"
+    $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File `"$backupScript`""
+    $trigger = New-ScheduledTaskTrigger -Daily -At 3am
+
+    # Remove existing task if present
+    if (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue) {
+        Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
+        Write-Host "Old task '$taskName' removed."
+    }
+
+    Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -User $admin -Password "P@ssword123"
+    Write-Host "Scheduled task '$taskName' registered for $admin."
+}
+
+Write-Host "`n✅ Environment setup complete."
 Read-Host -Prompt "Press Enter to exit"
+
 
 
   
