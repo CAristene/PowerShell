@@ -44,8 +44,8 @@ Set-Content -Path $backupScript -Value '# Placeholder for backup logic'
 
 $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File `"$backupScript`""
 $trigger = New-ScheduledTaskTrigger -Daily -At 3am
-Register-ScheduledTask -TaskName "DailyBackup" -Action $action -Trigger $trigger -User "Bstewart" -Password "P@ssword123"
-Register-ScheduledTask -TaskName "DailyBackup" -Action $action -Trigger $trigger -User "Tgreen" -Password "P@ssword123"
+Register-ScheduledTask -TaskName "DailyBackup.Bstewart" -Action $action -Trigger $trigger -User "Bstewart" -Password "P@ssword123"
+Register-ScheduledTask -TaskName "DailyBackup.Tgreen" -Action $action -Trigger $trigger -User "Tgreen" -Password "P@ssword123"
 
 Write-Host "Environment setup complete."
 Read-Host -Prompt "Press Enter to exit"
